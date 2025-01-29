@@ -1,58 +1,64 @@
 ## Componentes
-### Props
 
-Props são argumentos passados para os componentes React. Eles permitem que você passe dados de um componente pai para um componente filho. Props são imutáveis, o que significa que um componente não pode modificar seus próprios props.
+Permitem você dividir a sua interface em pequenos elementos. São criados através de funções que retornam elementos React.
 
-#### Exemplo de Uso de Props
-
-```jsx
-function Welcome(props) {
-     return <h1>Hello, {props.name}</h1>;
-}
-```
-
-No exemplo acima, o componente `Welcome` recebe uma prop chamada `name` e a utiliza para exibir uma mensagem de boas-vindas.
-
-#### Passando Props para Componentes Filhos
-
-```jsx
-function App() {
-    return <Welcome name="Sara" />;
-}
-```
-
-Neste exemplo, o componente `App` está passando a prop `name` com o valor "Sara" para o componente `Welcome`.
-
-#### Props Padrão
-
-Você pode definir valores padrão para props utilizando `defaultProps`.
-
-```jsx
-function Welcome(props) {
-    return <h1>Hello, {props.name}</h1>;
-}
-
-Welcome.defaultProps = {
-    name: 'Stranger'
+```js
+const Button = () => {
+     return <button>Clicar</button>;
 };
 ```
 
-Se nenhuma prop `name` for passada, o valor padrão "Stranger" será utilizado.
+O principal motivo de criarmos componentes é para podermos compor a interface com diversos componentes que podem ser reutilizados.
 
-#### Validação de Props
+### Eventos
 
-Para garantir que os componentes recebam as props corretas, você pode utilizar `PropTypes`.
+Podemos atribuir eventos diretamente aos elementos.
 
-```jsx
-import PropTypes from 'prop-types';
-
-function Welcome(props) {
-    return <h1>Hello, {props.name}</h1>;
+```js
+function handleClick(event) {
+     return console.log('Comprou:' + event.target.innerText);
 }
+```
 
-Welcome.propTypes = {
-    name: PropTypes.string
+### JavaScript {}
+
+É utilizado `{}` para executar expressões de JavaScript e mostrar o resultado no DOM.
+
+```js
+const Produtos = () => {
+     const produto1 = 'Camisa';
+     const produto2 = 'Bermuda';
+
+     return (
+          <div>
+               <button onClick={handleClick}>
+                    {produto1} - R$ {Math.random()}
+               </button>
+
+               <button onClick={handleClick}>
+                    {produto2} - R$ {Math.random() * 100}
+               </button>
+          </div>
+     );
 };
 ```
 
-Neste exemplo, estamos validando que a prop `name` deve ser uma string.
+### Hooks
+
+Utilizamos o React pela facilidade de sincronização do estado. Os Hooks são funções especiais de React, o useState possibilita a sincronização do estado.
+
+```js
+const Comprar = () => {
+     const [count, setCount] = React.useState(1);
+     function handleClick() {
+          setCount(count + 1);
+     }
+     return (
+          <div>
+               <button onClick={handleClick}>Comprar:{count}</button>
+               <p>Total: {count}</p>
+               <p>Preço: {count * 250}</p>
+          </div>
+     );
+};
+```
