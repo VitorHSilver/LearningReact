@@ -1,64 +1,52 @@
-## Componentes
+### HOOKS
 
-Permitem você dividir a sua interface em pequenos elementos. São criados através de funções que retornam elementos React.
+Hooks são uma adição ao React que permitem o uso de estado e outros recursos do React sem escrever uma classe. Eles foram introduzidos na versão 16.8 do React e são amplamente utilizados para gerenciar estado, efeitos colaterais e outros aspectos do ciclo de vida dos componentes funcionais.
 
-```js
-const Button = () => {
-     return <button>Clicar</button>;
-};
-```
+Exemplo de uso de `useState`:
 
-O principal motivo de criarmos componentes é para podermos compor a interface com diversos componentes que podem ser reutilizados.
+```jsx
+import React, { useState } from 'react';
 
-### Eventos
+function Contador() {
+    // Declara uma variável de estado chamada "contagem" e uma função para atualizá-la
+    const [contagem, setContagem] = useState(0);
 
-Podemos atribuir eventos diretamente aos elementos.
-
-```js
-function handleClick(event) {
-     return console.log('Comprou:' + event.target.innerText);
+    return (
+        <div>
+            <p>Você clicou {contagem} vezes</p>
+            <button onClick={() => setContagem(contagem + 1)}>
+                Clique aqui
+            </button>
+        </div>
+    );
 }
 ```
 
-### JavaScript {}
+Neste exemplo, o hook `useState` é usado para adicionar estado ao componente funcional `Contador`. A variável `contagem` mantém o valor atual do estado, e `setContagem` é a função usada para atualizá-lo.
 
-É utilizado `{}` para executar expressões de JavaScript e mostrar o resultado no DOM.
+Exemplo de uso de `useEffect`:
 
-```js
-const Produtos = () => {
-     const produto1 = 'Camisa';
-     const produto2 = 'Bermuda';
+```jsx
+import React, { useEffect, useState } from 'react';
 
-     return (
-          <div>
-               <button onClick={handleClick}>
-                    {produto1} - R$ {Math.random()}
-               </button>
+function Relogio() {
+    const [hora, setHora] = useState(new Date());
 
-               <button onClick={handleClick}>
-                    {produto2} - R$ {Math.random() * 100}
-               </button>
-          </div>
-     );
-};
+    useEffect(() => {
+        const timerID = setInterval(() => setHora(new Date()), 1000);
+
+        // Limpeza do efeito
+        return () => clearInterval(timerID);
+    }, []);
+
+    return (
+        <div>
+            <h2>Hora atual: {hora.toLocaleTimeString()}</h2>
+        </div>
+    );
+}
 ```
 
-### Hooks
+Neste exemplo, o hook `useEffect` é usado para configurar um temporizador que atualiza o estado `hora` a cada segundo. O retorno da função passada para `useEffect` é usado para limpar o temporizador quando o componente é desmontado.
 
-Utilizamos o React pela facilidade de sincronização do estado. Os Hooks são funções especiais de React, o useState possibilita a sincronização do estado.
-
-```js
-const Comprar = () => {
-     const [count, setCount] = React.useState(1);
-     function handleClick() {
-          setCount(count + 1);
-     }
-     return (
-          <div>
-               <button onClick={handleClick}>Comprar:{count}</button>
-               <p>Total: {count}</p>
-               <p>Preço: {count * 250}</p>
-          </div>
-     );
-};
-```
+Hooks permitem que você reutilize lógica de estado entre componentes, simplificando a estrutura e a manutenção do código. Além de `useState` e `useEffect`, existem outros hooks integrados, como `useContext`, `useReducer`, `useMemo`, e você também pode criar seus próprios hooks personalizados para encapsular lógica reutilizável.
