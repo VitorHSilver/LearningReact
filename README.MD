@@ -11,14 +11,14 @@ Este projeto é uma interface simples em React que utiliza a Fetch API para obte
 
 ### Uso do States
 
-```
+```js
 const [product, setProduct] = React.useState(null);
 const [loading, setLoading] = React.useState(false);
 ```
 
 No componente Button, utilizamos props para passar o nome do botão, a classe de estilo e a função de clique.
 
-```
+```js
 const Button = ({ name, styleClass, onClick }) => {
     return (
         <div>
@@ -41,7 +41,7 @@ const Button = ({ name, styleClass, onClick }) => {
 
 #### Fetch com Async/Await
 Desestruturando o event.target para pegar a variavel innerHTML
-```
+```js
 async function handleClick(event) {
     const { innerHTML } = event.target;
     setLoading(true);
