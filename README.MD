@@ -1,52 +1,53 @@
-### HOOKS
+# Projeto de Interface com Fetch API
 
-Hooks são uma adição ao React que permitem o uso de estado e outros recursos do React sem escrever uma classe. Eles foram introduzidos na versão 16.8 do React e são amplamente utilizados para gerenciar estado, efeitos colaterais e outros aspectos do ciclo de vida dos componentes funcionais.
+Este projeto é uma interface simples em React que utiliza a Fetch API para obter dados de produtos de uma API externa e exibi-los na tela. A interface possui três botões, cada um representando um produto diferente (Tablet, Smartphone e Notebook). Ao clicar em um botão, os dados do produto correspondente são buscados e exibidos na tela.
 
-Exemplo de uso de `useState`:
+## Funcionalidades
 
-```jsx
-import React, { useState } from 'react';
+-    Três botões para selecionar diferentes produtos.
+-    Ao clicar em um botão, os dados do produto são buscados da API e exibidos na tela.
+-    Exibe uma mensagem de "Carregando..." enquanto os dados estão sendo buscados.
+-    Mostra apenas um produto por vez.
 
-function Contador() {
-    // Declara uma variável de estado chamada "contagem" e uma função para atualizá-la
-    const [contagem, setContagem] = useState(0);
+### Uso do States
 
+```
+const [product, setProduct] = React.useState(null);
+const [loading, setLoading] = React.useState(false);
+```
+
+No componente Button, utilizamos props para passar o nome do botão, a classe de estilo e a função de clique.
+
+```
+const Button = ({ name, styleClass, onClick }) => {
     return (
         <div>
-            <p>Você clicou {contagem} vezes</p>
-            <button onClick={() => setContagem(contagem + 1)}>
-                Clique aqui
+            <button
+                className={`text-black p-2 m-2 cursor-pointer ${
+                    styleClass === 'blue'
+                        ? 'bg-blue-200 '
+                        : styleClass === 'green'
+                        ? 'bg-emerald-500'
+                        : 'bg-red-500'
+                }`}
+                onClick={onClick}
+            >
+                {name}
             </button>
         </div>
     );
-}
+};
 ```
 
-Neste exemplo, o hook `useState` é usado para adicionar estado ao componente funcional `Contador`. A variável `contagem` mantém o valor atual do estado, e `setContagem` é a função usada para atualizá-lo.
-
-Exemplo de uso de `useEffect`:
-
-```jsx
-import React, { useEffect, useState } from 'react';
-
-function Relogio() {
-    const [hora, setHora] = useState(new Date());
-
-    useEffect(() => {
-        const timerID = setInterval(() => setHora(new Date()), 1000);
-
-        // Limpeza do efeito
-        return () => clearInterval(timerID);
-    }, []);
-
-    return (
-        <div>
-            <h2>Hora atual: {hora.toLocaleTimeString()}</h2>
-        </div>
-    );
+#### Fetch com Async/Await
+Desestruturando o event.target para pegar a variavel innerHTML
+```
+async function handleClick(event) {
+    const { innerHTML } = event.target;
+    setLoading(true);
+    const url = await fetch(`https://ranekapi.origamid.dev/json/api/produto/${innerHTML.toLowerCase()}`);
+    const dado_json = await url.json();
+    setProduct(dado_json);
+    setLoading(false);
 }
 ```
-
-Neste exemplo, o hook `useEffect` é usado para configurar um temporizador que atualiza o estado `hora` a cada segundo. O retorno da função passada para `useEffect` é usado para limpar o temporizador quando o componente é desmontado.
-
-Hooks permitem que você reutilize lógica de estado entre componentes, simplificando a estrutura e a manutenção do código. Além de `useState` e `useEffect`, existem outros hooks integrados, como `useContext`, `useReducer`, `useMemo`, e você também pode criar seus próprios hooks personalizados para encapsular lógica reutilizável.
