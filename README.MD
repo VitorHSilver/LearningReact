@@ -1,53 +1,109 @@
-# Projeto de Interface com Fetch API
+## useRef
 
-Este projeto é uma interface simples em React que utiliza a Fetch API para obter dados de produtos de uma API externa e exibi-los na tela. A interface possui três botões, cada um representando um produto diferente (Tablet, Smartphone e Notebook). Ao clicar em um botão, os dados do produto correspondente são buscados e exibidos na tela.
+/\*\*
 
-## Funcionalidades
+-    Este código define um componente funcional React que gerencia uma lista de comentários.
+-
+-    -    `comments`: Um estado que armazena a lista de comentários.
+-    -    `input`: Um estado que armazena o valor atual do campo de entrada.
+-    -    `inputElement`: Uma referência ao elemento de entrada (input) no DOM.
+-
 
--    Três botões para selecionar diferentes produtos.
--    Ao clicar em um botão, os dados do produto são buscados da API e exibidos na tela.
--    Exibe uma mensagem de "Carregando..." enquanto os dados estão sendo buscados.
--    Mostra apenas um produto por vez.
-
-### Uso do States
-
-```js
-const [product, setProduct] = React.useState(null);
-const [loading, setLoading] = React.useState(false);
+```jsx
+const [comments, setComments] = React.useState([]);
+const [input, setInput] = React.useState('');
+const inputElement = React.useRef();
 ```
 
-No componente Button, utilizamos props para passar o nome do botão, a classe de estilo e a função de clique.
+-    Função `handleClick`:
+-    -    Adiciona o valor atual do campo de entrada à lista de comentários.
+-    -    Limpa o campo de entrada.
+-    -    Define o foco de volta ao campo de entrada usando a referência `inputElement`.
 
-```js
-const Button = ({ name, styleClass, onClick }) => {
-    return (
-        <div>
-            <button
-                className={`text-black p-2 m-2 cursor-pointer ${
-                    styleClass === 'blue'
-                        ? 'bg-blue-200 '
-                        : styleClass === 'green'
-                        ? 'bg-emerald-500'
-                        : 'bg-red-500'
-                }`}
-                onClick={onClick}
-            >
-                {name}
-            </button>
-        </div>
-    );
+```jsx
+const handleClick = () => {
+     setComments([...comments, input]);
+     setInput('');
+     inputElement.current.focus();
 };
 ```
 
-#### Fetch com Async/Await
-Desestruturando o event.target para pegar a variavel innerHTML
-```js
-async function handleClick(event) {
-    const { innerHTML } = event.target;
-    setLoading(true);
-    const url = await fetch(`https://ranekapi.origamid.dev/json/api/produto/${innerHTML.toLowerCase()}`);
-    const dado_json = await url.json();
-    setProduct(dado_json);
-    setLoading(false);
+-    O componente renderiza:
+-    -    Um título "comments:".
+-    -    Uma lista de comentários.
+-    -    Um campo de entrada para adicionar novos comentários.
+-    -    Um botão "Enviar" que chama a função `handleClick` ao ser clicado.
+-
+-    A referência `inputElement` é utilizada para acessar diretamente o elemento de entrada no DOM e definir o foco nele após o envio de um comentário.
+     \*/
+
+```jsx
+<div className="m-4">
+     <h1 className="text-lg font-extrabold mb-4">comments:</h1>
+     <ul>
+          {comments.map((comment, index) => (
+               <li key={index}>{comment}</li>
+          ))}
+     </ul>
+     <div className="mt-4">
+          <input
+               type="text"
+               className="border"
+               value={input}
+               ref={inputElement}
+               onChange={({ target }) => setInput(target.value)}
+          />
+          <button className="bg-blue-300 p-2 rounded-md ml-2" onClick={handleClick}>
+               Enviar
+          </button>
+     </div>
+</div>
+```
+
+## useRef com Temporizador
+
+Este código define um componente funcional React que gerencia um contador e uma notificação temporária.
+
+### Estados e Referências
+
+-    `contar`: Um estado que armazena o valor atual do contador.
+-    `notificacao`: Um estado que armazena a mensagem de notificação.
+-    `timeoutRef`: Uma referência ao temporizador (`timeout`) no DOM.
+
+```jsx
+const [contar, setContar] = React.useState(0);
+const [notificacao, setNotificacao] = React.useState(null);
+const timeoutRef = React.useRef();
+```
+
+Função handleClick
+Define a mensagem de notificação como "Obrigado por comprar".
+Limpa qualquer temporizador existente usando clearTimeout.
+Define um novo temporizador que limpa a mensagem de notificação após 1 segundo.
+Incrementa o valor do contador.
+
+```jsx
+function handleClick() {
+     setNotificacao('Obrigado por comprar');
+     clearTimeout(timeoutRef.current);
+     timeoutRef.current = setTimeout(() => {
+          setNotificacao(null);
+     }, 1000);
+     setContar(contar + 1);
 }
+```
+
+Renderização do Componente
+O componente renderiza:
+
+A mensagem de notificação, se houver.
+Um botão que exibe o valor atual do contador e chama a função handleClick ao ser clicado.
+
+```jsx
+return (
+     <div>
+          <p>{notificacao}</p>
+          <button onClick={handleClick}>{contar}</button>
+     </div>
+);
 ```
