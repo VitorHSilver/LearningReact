@@ -1,53 +1,40 @@
-# Projeto de Interface com Fetch API
+## Usando `useEffect` no React
 
-Este projeto é uma interface simples em React que utiliza a Fetch API para obter dados de produtos de uma API externa e exibi-los na tela. A interface possui três botões, cada um representando um produto diferente (Tablet, Smartphone e Notebook). Ao clicar em um botão, os dados do produto correspondente são buscados e exibidos na tela.
+O hook `useEffect` no React permite que você realize efeitos colaterais em seus componentes funcionais. Efeitos colaterais podem incluir a busca de dados, manipulação direta do DOM e mais. Abaixo estão exemplos demonstrando o uso do `useEffect` em um componente React.
 
-## Funcionalidades
 
--    Três botões para selecionar diferentes produtos.
--    Ao clicar em um botão, os dados do produto são buscados da API e exibidos na tela.
--    Exibe uma mensagem de "Carregando..." enquanto os dados estão sendo buscados.
--    Mostra apenas um produto por vez.
+### Explicação
 
-### Uso do States
+1. **Buscando Dados ao Montar**:
+   ```jsx
+   React.useEffect(() => {
+       fetch('https://ranekapi.origamid.dev/json/api/produto/notebook')
+           .then((response) => response.json())
+           .then((json => setDados(json)));
+   }, []);
+   ```
+   Este `useEffect` é executado uma vez quando o componente é montado, buscando dados de uma API e armazenando-os no estado `dados`.
 
-```js
-const [product, setProduct] = React.useState(null);
-const [loading, setLoading] = React.useState(false);
-```
+2. **Logando ao Montar**:
+   ```jsx
+   React.useEffect(() => {
+       console.log('Inicializou');
+   }, []);
+   ```
+   Este `useEffect` também é executado uma vez quando o componente é montado, registrando 'Inicializou' no console.
 
-No componente Button, utilizamos props para passar o nome do botão, a classe de estilo e a função de clique.
+3. **Atualizando o Título do Documento**:
+   ```jsx
+   React.useEffect(() => {
+       document.title = 'Total ' + contar;
+   }, [contar]);
+   ```
+   Este `useEffect` é executado toda vez que o estado `contar` muda, atualizando o título do documento para refletir a contagem atual.
 
-```js
-const Button = ({ name, styleClass, onClick }) => {
-    return (
-        <div>
-            <button
-                className={`text-black p-2 m-2 cursor-pointer ${
-                    styleClass === 'blue'
-                        ? 'bg-blue-200 '
-                        : styleClass === 'green'
-                        ? 'bg-emerald-500'
-                        : 'bg-red-500'
-                }`}
-                onClick={onClick}
-            >
-                {name}
-            </button>
-        </div>
-    );
-};
-```
+### Resumo
 
-#### Fetch com Async/Await
-Desestruturando o event.target para pegar a variavel innerHTML
-```js
-async function handleClick(event) {
-    const { innerHTML } = event.target;
-    setLoading(true);
-    const url = await fetch(`https://ranekapi.origamid.dev/json/api/produto/${innerHTML.toLowerCase()}`);
-    const dado_json = await url.json();
-    setProduct(dado_json);
-    setLoading(false);
-}
-```
+O hook `useEffect` é uma ferramenta poderosa para gerenciar efeitos colaterais em componentes funcionais do React. Especificando dependências, você pode controlar quando o efeito é executado, facilitando o manuseio de tarefas como busca de dados, registro de logs e atualização do DOM.
+     const [contar, setContar] = React.useState(0);
+     const [dados, setDados] = React.useState(null);
+
+     
