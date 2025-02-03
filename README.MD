@@ -1,109 +1,79 @@
-## useRef
+# Projeto LearningReact
 
-/\*\*
+## Visão Geral
 
--    Este código define um componente funcional React que gerencia uma lista de comentários.
--
--    -    `comments`: Um estado que armazena a lista de comentários.
--    -    `input`: Um estado que armazena o valor atual do campo de entrada.
--    -    `inputElement`: Uma referência ao elemento de entrada (input) no DOM.
--
+Este projeto demonstra como buscar dados usando o hook `useContext` do `GlobalContext` em uma aplicação React.
 
-```jsx
-const [comments, setComments] = React.useState([]);
-const [input, setInput] = React.useState('');
-const inputElement = React.useRef();
+## GlobalContext
+
+Primeiro, criamos um `GlobalContext` usando `React.createContext()`:
+
+```javascript
+import React from 'react';
+
+export const GlobalContext = React.createContext();
 ```
 
--    Função `handleClick`:
--    -    Adiciona o valor atual do campo de entrada à lista de comentários.
--    -    Limpa o campo de entrada.
--    -    Define o foco de volta ao campo de entrada usando a referência `inputElement`.
+## Componente GlobalStorage
 
-```jsx
-const handleClick = () => {
-     setComments([...comments, input]);
-     setInput('');
-     inputElement.current.focus();
-};
+O componente `GlobalStorage` é responsável por buscar dados da API e armazená-los no contexto global. Ele também fornece uma função para limpar os dados buscados.
+
+```javascript
+import React from 'react';
+import { GlobalContext } from './GlobalContext';
+
+export const GlobalStorage = ({ children }) => {
+     const [product, setProduct] = React.useState([]);
+
+     const handleFetch = async () => {
+          try {
+               const response = await fetch('https://ranekapi.origamid.dev/json/api/produto/notebook');
+               const data = await response.json();
+               setProduct(data);
+          } catch (error) {
+               console.error('Error:', error);
+          }
+     };
+
+     const clearData = () => {
+          setProduct([]);
+     };
+
+      return (
+          <GlobalContext.Provider
+               value={{
+                    Name: 'Vitor Henrique da Silva',
+                    Idade: 28,
+                    contar,
+                    adicionarUm,
+                    handleFetch,
+                    product,
+                    clearDate,
+               }}
+          >
+               {children}
+          </GlobalContext.Provider>
+     );
 ```
 
--    O componente renderiza:
--    -    Um título "comments:".
--    -    Uma lista de comentários.
--    -    Um campo de entrada para adicionar novos comentários.
--    -    Um botão "Enviar" que chama a função `handleClick` ao ser clicado.
--
--    A referência `inputElement` é utilizada para acessar diretamente o elemento de entrada no DOM e definir o foco nele após o envio de um comentário.
-     \*/
+```javascript
+import { GlobalContext } from './GlobalContext';
 
-```jsx
-<div className="m-4">
-     <h1 className="text-lg font-extrabold mb-4">comments:</h1>
-     <ul>
-          {comments.map((comment, index) => (
-               <li key={index}>{comment}</li>
-          ))}
-     </ul>
-     <div className="mt-4">
-          <input
-               type="text"
-               className="border"
-               value={input}
-               ref={inputElement}
-               onChange={({ target }) => setInput(target.value)}
-          />
-          <button className="bg-blue-300 p-2 rounded-md ml-2" onClick={handleClick}>
-               Enviar
-          </button>
-     </div>
-</div>
-```
+const dados = React.useContext(GlobalContext);
 
-## useRef com Temporizador
-
-Este código define um componente funcional React que gerencia um contador e uma notificação temporária.
-
-### Estados e Referências
-
--    `contar`: Um estado que armazena o valor atual do contador.
--    `notificacao`: Um estado que armazena a mensagem de notificação.
--    `timeoutRef`: Uma referência ao temporizador (`timeout`) no DOM.
-
-```jsx
-const [contar, setContar] = React.useState(0);
-const [notificacao, setNotificacao] = React.useState(null);
-const timeoutRef = React.useRef();
-```
-
-Função handleClick
-Define a mensagem de notificação como "Obrigado por comprar".
-Limpa qualquer temporizador existente usando clearTimeout.
-Define um novo temporizador que limpa a mensagem de notificação após 1 segundo.
-Incrementa o valor do contador.
-
-```jsx
-function handleClick() {
-     setNotificacao('Obrigado por comprar');
-     clearTimeout(timeoutRef.current);
-     timeoutRef.current = setTimeout(() => {
-          setNotificacao(null);
-     }, 1000);
-     setContar(contar + 1);
-}
-```
-
-Renderização do Componente
-O componente renderiza:
-
-A mensagem de notificação, se houver.
-Um botão que exibe o valor atual do contador e chama a função handleClick ao ser clicado.
-
-```jsx
-return (
-     <div>
-          <p>{notificacao}</p>
-          <button onClick={handleClick}>{contar}</button>
-     </div>
-);
+<div className="col-span-2 mt-24 ">
+     <h2 className="text-2xl inline-block">Dados Puxados:</h2>{' '}
+     <button className="ml-4 px-2 py-4 bg-green-400 rounded-md" onClick={() => dados.handleFetch()}>
+          Puxar
+     </button>
+     <button className="ml-4 px-2 py-4 bg-amber-400 rounded-md" onClick={() => dados.clearDate()}>
+          Limpar
+     </button>
+     {dados.product && (
+          <div>
+               <h2>{dados.product.nome}</h2>
+               <p>{dados.product.preco}</p>
+          </div>
+     )}
+</div>;
 ```

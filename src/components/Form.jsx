@@ -27,10 +27,20 @@ const Form = () => {
                <p className="col-span-2 text-center">{input}</p>
                <p className="col-span-2 text-center">Dados do Context: {dados.Name}</p>
 
-               <div className="col-span-2 mt-24">
-                    <button className="bg-emerald-100 py-4 px-2 rounded-md" onClick={() => dados.adicionarDois()}>
-                         ADD:{dados.contar}
+               <div className="col-span-2 mt-24 ">
+                    <h2 className="text-2xl inline-block">Dados Puxados:</h2>{' '}
+                    <button className="ml-4 px-2 py-4 bg-green-400 rounded-md" onClick={() => dados.handleFetch()}>
+                         Puxar
                     </button>
+                    <button className="ml-4 px-2 py-4 bg-amber-300 rounded-md" onClick={() => dados.clearDate()}>
+                         Limpar
+                    </button>
+                    {dados.product && (
+                         <div>
+                              <h2>{dados.product.nome}</h2>
+                              <p>{dados.product.preco}</p>
+                         </div>
+                    )}
                </div>
           </div>
      );
