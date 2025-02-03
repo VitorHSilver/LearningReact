@@ -1,109 +1,70 @@
-## useRef
 
-/\*\*
+## Uso do CreateContext() e useContext()
 
--    Este código define um componente funcional React que gerencia uma lista de comentários.
--
--    -    `comments`: Um estado que armazena a lista de comentários.
--    -    `input`: Um estado que armazena o valor atual do campo de entrada.
--    -    `inputElement`: Uma referência ao elemento de entrada (input) no DOM.
--
+### CreateContext()
 
-```jsx
-const [comments, setComments] = React.useState([]);
-const [input, setInput] = React.useState('');
-const inputElement = React.useRef();
-```
+A função `CreateContext()` do React é usada para criar um contexto. Um contexto permite que você passe dados através da árvore de componentes sem ter que passar props manualmente em cada nível.
 
--    Função `handleClick`:
--    -    Adiciona o valor atual do campo de entrada à lista de comentários.
--    -    Limpa o campo de entrada.
--    -    Define o foco de volta ao campo de entrada usando a referência `inputElement`.
+### useContext()
+
+O hook `useContext()` é usado para acessar o valor de um contexto em um componente funcional. Ele aceita um objeto de contexto (o valor retornado de `React.createContext`) e retorna o valor atual do contexto.
+
+### Exemplo
+
+No exemplo abaixo, criamos um contexto global chamado `GlobalContext` e um componente `GlobalStorage` que fornece valores para esse contexto.
 
 ```jsx
-const handleClick = () => {
-     setComments([...comments, input]);
-     setInput('');
-     inputElement.current.focus();
+import React from 'react';
+
+export const GlobalContext = React.createContext();
+
+export const GlobalStorage = ({ children }) => {
+     const [contar, setContar] = React.useState(0);
+
+     const adicionarUm = () => {
+          setContar((contar) => contar + 1);
+     };
+     const adicionarDois = () => {
+          setContar((contar) => contar + 2);
+     };
+     return (
+          <GlobalContext.Provider
+               value={{ Name: 'Vitor Henrique da Silva', Idade: 28, contar, adicionarUm, adicionarDois }}
+          >
+               {children}
+          </GlobalContext.Provider>
+     );
 };
 ```
 
--    O componente renderiza:
--    -    Um título "comments:".
--    -    Uma lista de comentários.
--    -    Um campo de entrada para adicionar novos comentários.
--    -    Um botão "Enviar" que chama a função `handleClick` ao ser clicado.
--
--    A referência `inputElement` é utilizada para acessar diretamente o elemento de entrada no DOM e definir o foco nele após o envio de um comentário.
-     \*/
+Neste exemplo:
+
+- `GlobalContext` é criado usando `React.createContext()`.
+- `GlobalStorage` é um componente que usa o hook `useState` para gerenciar o estado `contar`.
+- `GlobalStorage` fornece funções `adicionarUm` e `adicionarDois` para atualizar o estado `contar`.
+- `GlobalContext.Provider` é usado para fornecer valores (`Name`, `Idade`, `contar`, `adicionarUm`, `adicionarDois`) para todos os componentes filhos.
+
+Para acessar esses valores em um componente filho, você pode usar o hook `useContext()`:
 
 ```jsx
-<div className="m-4">
-     <h1 className="text-lg font-extrabold mb-4">comments:</h1>
-     <ul>
-          {comments.map((comment, index) => (
-               <li key={index}>{comment}</li>
-          ))}
-     </ul>
-     <div className="mt-4">
-          <input
-               type="text"
-               className="border"
-               value={input}
-               ref={inputElement}
-               onChange={({ target }) => setInput(target.value)}
-          />
-          <button className="bg-blue-300 p-2 rounded-md ml-2" onClick={handleClick}>
-               Enviar
-          </button>
-     </div>
-</div>
+import React from 'react';
+import { GlobalContext } from './GlobalStorage';
+
+const MeuComponente = () => {
+     const { Name, Idade, contar, adicionarUm, adicionarDois } = React.useContext(GlobalContext);
+
+     return (
+          <div>
+               <p>Nome: {Name}</p>
+               <p>Idade: {Idade}</p>
+               <p>Contar: {contar}</p>
+               <button onClick={adicionarUm}>Adicionar Um</button>
+               <button onClick={adicionarDois}>Adicionar Dois</button>
+          </div>
+     );
+};
+
+export default MeuComponente;
 ```
 
-## useRef com Temporizador
-
-Este código define um componente funcional React que gerencia um contador e uma notificação temporária.
-
-### Estados e Referências
-
--    `contar`: Um estado que armazena o valor atual do contador.
--    `notificacao`: Um estado que armazena a mensagem de notificação.
--    `timeoutRef`: Uma referência ao temporizador (`timeout`) no DOM.
-
-```jsx
-const [contar, setContar] = React.useState(0);
-const [notificacao, setNotificacao] = React.useState(null);
-const timeoutRef = React.useRef();
-```
-
-Função handleClick
-Define a mensagem de notificação como "Obrigado por comprar".
-Limpa qualquer temporizador existente usando clearTimeout.
-Define um novo temporizador que limpa a mensagem de notificação após 1 segundo.
-Incrementa o valor do contador.
-
-```jsx
-function handleClick() {
-     setNotificacao('Obrigado por comprar');
-     clearTimeout(timeoutRef.current);
-     timeoutRef.current = setTimeout(() => {
-          setNotificacao(null);
-     }, 1000);
-     setContar(contar + 1);
-}
-```
-
-Renderização do Componente
-O componente renderiza:
-
-A mensagem de notificação, se houver.
-Um botão que exibe o valor atual do contador e chama a função handleClick ao ser clicado.
-
-```jsx
-return (
-     <div>
-          <p>{notificacao}</p>
-          <button onClick={handleClick}>{contar}</button>
-     </div>
-);
-```
+Neste componente, `useContext(GlobalContext)` é usado para acessar os valores fornecidos pelo `GlobalStorage`.
