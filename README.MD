@@ -1,5 +1,3 @@
-# Projeto Learning React
-
 ## Visão Geral
 
 Este projeto demonstra uma aplicação simples em React que inclui um formulário para registro de usuários. O formulário coleta vários detalhes do usuário e os envia para um endpoint da API usando o método `fetch`.
