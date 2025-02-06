@@ -1,139 +1,129 @@
+# Aprendendo React - Inputs de Radio e Checkbox
+
 ## Visão Geral
 
-Este projeto demonstra uma aplicação simples em React que inclui um formulário para registro de usuários. O formulário coleta vários detalhes do usuário e os envia para um endpoint da API usando o método `fetch`.
+Este projeto demonstra o uso de inputs de radio e checkbox em uma aplicação React. Os inputs de radio permitem que o usuário selecione uma opção de um conjunto, enquanto os inputs de checkbox permitem que o usuário selecione múltiplas opções.
 
-## Funcionalidades
+## Inputs de Radio
 
--    **Manipulação de Formulário**: O formulário inclui campos para nome, email, senha e detalhes de endereço.
--    **Gerenciamento de Estado**: Utiliza o hook `useState` do React para gerenciar os dados do formulário e o estado da resposta.
--    **Interação com API**: Envia os dados do formulário para um endpoint da API usando o método `fetch`.
+Os inputs de radio são usados quando você quer que o usuário selecione uma opção de um conjunto. Neste exemplo, o usuário pode selecionar entre "Notebook", "Smartphone" e "Tablet".
 
-## Explicação do Código
+```jsx
+const [radio, setRadio] = React.useState('');
 
-### Estado do Formulário
 
-O estado do formulário é gerenciado usando o hook `useState`. O estado inicial inclui campos para nome, email, senha e detalhes de endereço.
+-    `RadioChange`: Esta função atualiza o estado `radio` quando um input de radio é selecionado.
 
-```javascript
-const [form, setForm] = React.useState({
-     nome: '',
-     email: '',
-     senha: '',
-     cep: '',
-     rua: '',
-     numero: '',
-     bairro: '',
-     cidade: '',
-     estado: '',
-});
-```
-
-### Campos de Entrada
-
-Os campos de entrada são gerados dinamicamente a partir de um array de configurações de entrada. Cada campo de entrada atualiza o estado do formulário usando a função `handleChange`.
-
-```javascript
-const inputs = [
-     { id: 'nome', label: 'Nome', type: 'text' },
-     { id: 'email', label: 'Email', type: 'email' },
-     { id: 'senha', label: 'Senha', type: 'password' },
-     { id: 'cep', label: 'CEP', type: 'text' },
-     { id: 'rua', label: 'Rua', type: 'text' },
-     { id: 'numero', label: 'Número', type: 'text' },
-     { id: 'bairro', label: 'Bairro', type: 'text' },
-     { id: 'cidade', label: 'Cidade', type: 'text' },
-     { id: 'estado', label: 'Estado', type: 'text' },
-];
-```
-
-### Manipulação de Mudanças nos Campos
-
-A função `handleChange` atualiza o estado do formulário quando o valor de um campo de entrada é alterado.
-
-```javascript
-const handleChange = ({ target }) => {
-     const { id, value } = target;
-     setForm({ ...form, [id]: value });
+const RadioChange = ({ target }) => {
+     setRadio(target.value);
 };
+
+<label>
+     <input
+                    type="radio"
+                    name="produto"
+                    value="notebook"
+                    checked={radio === 'notebook'}
+                    onChange={RadioChange}
+     />
+     Notebook
+</label>
+<label>
+     <input
+                    type="radio"
+                    name="produto"
+                    value="smartphone"
+                    checked={radio === 'smartphone'}
+                    onChange={RadioChange}
+     />
+     Smartphone
+</label>
+<label>
+     <input
+                    type="radio"
+                    name="produto"
+                    value="tablet"
+                    checked={radio === 'tablet'}
+                    onChange={RadioChange}
+     />
+     Tablet
+</label>
 ```
 
-### Submissão do Formulário
+## Inputs de Checkbox
 
-A função `handleSubmit` lida com a submissão do formulário. Ela previne o comportamento padrão de submissão do formulário e envia os dados do formulário para o endpoint da API usando o método `fetch`.
+Os inputs de checkbox são usados quando você quer que o usuário selecione múltiplas opções de um conjunto. Neste exemplo, o usuário pode selecionar múltiplas cores.
 
-```javascript
-const handleSubmit = async (event) => {
-     event.preventDefault();
+```jsx
+const [cores, setCores] = React.useState(['black']);
 
-     try {
-          const response = await fetch('https://ranekapi.origamid.dev/json/api/usuario', {
-               method: 'POST',
-               headers: {
-                    'Content-Type': 'application/json',
-               },
-               body: JSON.stringify(form),
-          });
-
-          // Atualiza o estado com a resposta da API
-          setResponse(response);
-
-          // Verifica se a requisição foi bem-sucedida
-          if (response.ok) {
-               console.log('Formulário enviado com sucesso!');
-               console.log(response);
-          } else {
-               console.error('Erro ao enviar o formulário:', response.statusText);
-          }
-     } catch (error) {
-          console.error('Erro na requisição:', error);
+-    `handleChangeColor`: Esta função atualiza o estado `cores` quando um checkbox é marcado ou desmarcado.
+/*
+Usa o método filter para criar um novo array sem a cor desmarcada.
+A função de callback (cor) => cor !== target.value retorna true para todas as cores que são diferentes de target.value.
+Atualiza o estado cores com o novo array resultante.
+*/
+const handleChangeColor = ({ target }) => {
+     if (target.checked) {
+          setCores([...cores, target.value]);
+     } else {
+          setCores(cores.filter((cor) => cor !== target.value));
      }
 };
+-    `checkColor`: Esta função verifica se uma cor está incluída no estado `cores`.
+// considerando que o usuário tem um preferencia, pegamos a cor de preferencia e
+//comparamos com o valor passado de parametro
+const checkColor = (cor) => {
+     return cores.includes(cor);
+};
+
+<label>
+     <input type="checkbox" value="black" className="m-2" checked={checkColor('black')} onChange={handleChangeColor} />
+     Preto
+</label>;
 ```
 
-### Renderização do Formulário
+### Gerenciamento de Estado
 
-O formulário é renderizado com um botão de submissão. Se a resposta for bem-sucedida, uma mensagem de confirmação é exibida.
+-    `radio`: Este estado guarda o valor do input de radio selecionado.
+-    `cores`: Este estado guarda um array de cores selecionadas.
 
-```javascript
-return (
-     <div className="grid grid-cols-2 min-h-screen">
-          <div className="grid bg-black h-screen place-items-center">
-               <h2 className="text-8xl text-gray-100">Cadastro</h2>
-          </div>
-          <form
-               onSubmit={handleSubmit}
-               className="grid grid-cols-2 gap-4 p-8 w-full border border-gray-400/10 shadow max-w-2xl m-auto"
-          >
-               {inputs.map(({ id, label, type }) => (
-                    <div key={id}>
-                         <div className="grid grid-cols-[80px_auto] items-center">
-                              <label className="text-gray-300 uppercase" htmlFor={id}>
-                                   {label}
-                              </label>
-                              <input
-                                   type={type}
-                                   id={id}
-                                   name={label}
-                                   value={form[id]}
-                                   onChange={handleChange}
-                                   className="border mx-2 py-1 pl-1 border-gray-400/50 rounded-md"
-                              />
-                         </div>
-                    </div>
-               ))}
-               {response && response.ok && <p>Formulário enviado</p>}
-               <div className="flex justify-end col-span-2">
-                    <button className="mx-2 py-2 px-4 bg-gray-900 text-gray-200 rounded-md place-content-end cursor-pointer">
-                         Submit
-                    </button>
+### Reatividade no texto e background
+
+```jsx
+import React from 'react';
+import './App.css';
+
+const App = () => {
+     // Background de preferência vem como black
+     const [cores, setCores] = React.useState(['black']);
+
+     // Array para incluir reatividade no tailwind
+     // traduzindo os atributos para tailwind
+     const coresMap = {
+          black: 'bg-black',
+          white: 'bg-white',
+          blue: 'bg-blue-800',
+          red: 'bg-red-700',
+          green: 'bg-green-900',
+          yellow: 'bg-yellow-200',
+          gray: 'bg-gray-400',
+     };
+
+     return (
+          <div className="grid grid-cols-2 h-screen">
+               <div className={`grid h-screen place-items-center ${cores.map((cor) => coresMap[cor])}`}>
+                    <span className="text-gray-100 top-0 left-0 absolute ml-2">Home</span>
+                    <span className="text-gray-900 absolute top-210 left-443 ">@VitorHSilver</span>
+                    <h2 className="text-8xl text-gray-100 capitalize">{radio ? radio : 'Cadastro'}</h2>
                </div>
-          </form>
-     </div>
-);
+          </div>
+     );
+};
+
+export default App;
 ```
 
-## Conclusão
+Este código fornece uma maneira simples e interativa de aprender sobre inputs de radio e checkbox no React.
 
-Este projeto fornece um exemplo básico de manipulação de formulários no React, gerenciamento de estado e interação com uma API usando o método `fetch`. Ele serve como um bom ponto de partida para aprender a construir e gerenciar formulários em uma aplicação React.
-
-![print](./public/print.png)
+![radioAndCheckbox](./public/forms-radio-checkbox.png)
