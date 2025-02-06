@@ -16,6 +16,8 @@ const App = () => {
      });
 
      const [response, setResponse] = React.useState(null);
+     const [textArea, setTextArea] = React.useState('');
+     const [select, setSelect] = React.useState('');
 
      const inputs = [
           { id: 'nome', label: 'Nome', type: 'text' },
@@ -72,7 +74,7 @@ const App = () => {
                     </div>
                     <form
                          onSubmit={handleSubmit}
-                         className="grid grid-cols-2 gap-4 p-8 w-full border border-gray-400/10 shadow max-w-2xl m-auto"
+                         className="grid grid-cols-2 gap-4 p-8 w-full border border-gray-400/10 shadow max-w-2xl m-auto "
                     >
                          {inputs.map(({ id, label, type }) => (
                               <div key={id}>
@@ -92,6 +94,31 @@ const App = () => {
                               </div>
                          ))}
                          {response && response.ok && <p>Formulário enviado</p>}
+
+                         <textarea
+                              placeholder="Faça um comentario..."
+                              name="area"
+                              id="area"
+                              value={textArea}
+                              rows={4}
+                              onChange={({ target }) => setTextArea(target.value)}
+                              className="mt-3 p-1 col-span-2 border border-gray-400/50 resize-none rounded-md placeholder:text-gray-300"
+                         />
+                         <div>{textArea}</div>
+                         <label className="col-span-2" htmlFor="select">
+                              Escolha sua opção
+                         </label>
+                         <div className="col-span-2">
+                              <select id="produtos" value={select} onChange={({ target }) => setSelect(target.value)}>
+                                   <option value="" disabled>
+                                        Selecione
+                                   </option>
+                                   <option value="notebook">Notebook</option>
+                                   <option value="smartphone">Smartphone</option>
+                                   <option value="tablet">Tablet</option>
+                              </select>
+                              {select}
+                         </div>
                          <div className="flex justify-end col-span-2">
                               <button className="mx-2 py-2 px-4 bg-gray-900 text-gray-200 rounded-md place-content-end cursor-pointer">
                                    Submit

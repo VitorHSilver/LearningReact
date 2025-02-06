@@ -1,139 +1,57 @@
-## Visão Geral
+# Reatividade em Text Area e Select
 
-Este projeto demonstra uma aplicação simples em React que inclui um formulário para registro de usuários. O formulário coleta vários detalhes do usuário e os envia para um endpoint da API usando o método `fetch`.
+Este projeto demonstra a reatividade de um componente `textarea` e um componente `select` em um formulário React.
 
-## Funcionalidades
+## Text Area
 
--    **Manipulação de Formulário**: O formulário inclui campos para nome, email, senha e detalhes de endereço.
--    **Gerenciamento de Estado**: Utiliza o hook `useState` do React para gerenciar os dados do formulário e o estado da resposta.
--    **Interação com API**: Envia os dados do formulário para um endpoint da API usando o método `fetch`.
+O componente `textarea` permite ao usuário inserir texto livremente. A reatividade é alcançada através do uso do estado do React. O valor do `textarea` é controlado pelo estado `textArea`, e qualquer alteração no texto dispara a função `onChange`, que atualiza o estado.
 
-## Explicação do Código
-
-### Estado do Formulário
-
-O estado do formulário é gerenciado usando o hook `useState`. O estado inicial inclui campos para nome, email, senha e detalhes de endereço.
-
-```javascript
-const [form, setForm] = React.useState({
-     nome: '',
-     email: '',
-     senha: '',
-     cep: '',
-     rua: '',
-     numero: '',
-     bairro: '',
-     cidade: '',
-     estado: '',
-});
+```jsx
+<textarea
+     placeholder="Faça um comentario..."
+     name="area"
+     id="area"
+     value={textArea}
+     rows={4}
+     onChange={({ target }) => setTextArea(target.value)}
+     className="mt-3 p-1 col-span-2 border border-gray-400/50 resize-none rounded-md placeholder:text-gray-300"
+/>
+<div>{textArea}</div>
 ```
 
-### Campos de Entrada
+## Select
 
-Os campos de entrada são gerados dinamicamente a partir de um array de configurações de entrada. Cada campo de entrada atualiza o estado do formulário usando a função `handleChange`.
+O componente `select` permite ao usuário escolher uma opção de uma lista. A reatividade é gerenciada pelo estado `select`. Quando uma nova opção é selecionada, a função `onChange` atualiza o estado com o valor selecionado.
 
-```javascript
-const inputs = [
-     { id: 'nome', label: 'Nome', type: 'text' },
-     { id: 'email', label: 'Email', type: 'email' },
-     { id: 'senha', label: 'Senha', type: 'password' },
-     { id: 'cep', label: 'CEP', type: 'text' },
-     { id: 'rua', label: 'Rua', type: 'text' },
-     { id: 'numero', label: 'Número', type: 'text' },
-     { id: 'bairro', label: 'Bairro', type: 'text' },
-     { id: 'cidade', label: 'Cidade', type: 'text' },
-     { id: 'estado', label: 'Estado', type: 'text' },
-];
+```jsx
+<label className="col-span-2" htmlFor="select">
+     Escolha sua opção
+</label>
+<div className="col-span-2">
+     <select id="produtos" value={select} onChange={({ target }) => setSelect(target.value)}>
+          <option value="" disabled>
+               Selecione
+          </option>
+          <option value="notebook">Notebook</option>
+          <option value="smartphone">Smartphone</option>
+          <option value="tablet">Tablet</option>
+     </select>
+     {select}
+</div>
 ```
 
-### Manipulação de Mudanças nos Campos
+## Botão de Envio
 
-A função `handleChange` atualiza o estado do formulário quando o valor de um campo de entrada é alterado.
+O formulário também inclui um botão de envio estilizado.
 
-```javascript
-const handleChange = ({ target }) => {
-     const { id, value } = target;
-     setForm({ ...form, [id]: value });
-};
-```
-
-### Submissão do Formulário
-
-A função `handleSubmit` lida com a submissão do formulário. Ela previne o comportamento padrão de submissão do formulário e envia os dados do formulário para o endpoint da API usando o método `fetch`.
-
-```javascript
-const handleSubmit = async (event) => {
-     event.preventDefault();
-
-     try {
-          const response = await fetch('https://ranekapi.origamid.dev/json/api/usuario', {
-               method: 'POST',
-               headers: {
-                    'Content-Type': 'application/json',
-               },
-               body: JSON.stringify(form),
-          });
-
-          // Atualiza o estado com a resposta da API
-          setResponse(response);
-
-          // Verifica se a requisição foi bem-sucedida
-          if (response.ok) {
-               console.log('Formulário enviado com sucesso!');
-               console.log(response);
-          } else {
-               console.error('Erro ao enviar o formulário:', response.statusText);
-          }
-     } catch (error) {
-          console.error('Erro na requisição:', error);
-     }
-};
-```
-
-### Renderização do Formulário
-
-O formulário é renderizado com um botão de submissão. Se a resposta for bem-sucedida, uma mensagem de confirmação é exibida.
-
-```javascript
-return (
-     <div className="grid grid-cols-2 min-h-screen">
-          <div className="grid bg-black h-screen place-items-center">
-               <h2 className="text-8xl text-gray-100">Cadastro</h2>
-          </div>
-          <form
-               onSubmit={handleSubmit}
-               className="grid grid-cols-2 gap-4 p-8 w-full border border-gray-400/10 shadow max-w-2xl m-auto"
-          >
-               {inputs.map(({ id, label, type }) => (
-                    <div key={id}>
-                         <div className="grid grid-cols-[80px_auto] items-center">
-                              <label className="text-gray-300 uppercase" htmlFor={id}>
-                                   {label}
-                              </label>
-                              <input
-                                   type={type}
-                                   id={id}
-                                   name={label}
-                                   value={form[id]}
-                                   onChange={handleChange}
-                                   className="border mx-2 py-1 pl-1 border-gray-400/50 rounded-md"
-                              />
-                         </div>
-                    </div>
-               ))}
-               {response && response.ok && <p>Formulário enviado</p>}
-               <div className="flex justify-end col-span-2">
-                    <button className="mx-2 py-2 px-4 bg-gray-900 text-gray-200 rounded-md place-content-end cursor-pointer">
-                         Submit
-                    </button>
-               </div>
-          </form>
-     </div>
-);
+```jsx
+<div className="flex justify-end col-span-2">
+     <button className="mx-2 py-2 px-4 bg-gray-900 text-gray-200 rounded-md place-content-end cursor-pointer">
+          Submit
+     </button>
+</div>
 ```
 
 ## Conclusão
 
-Este projeto fornece um exemplo básico de manipulação de formulários no React, gerenciamento de estado e interação com uma API usando o método `fetch`. Ele serve como um bom ponto de partida para aprender a construir e gerenciar formulários em uma aplicação React.
-
-![print](./public/print.png)
+Este exemplo ilustra como usar o estado do React para criar componentes de formulário reativos, permitindo que a interface do usuário responda dinamicamente às entradas do usuário.
