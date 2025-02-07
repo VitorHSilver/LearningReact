@@ -1,32 +1,31 @@
 import React from 'react';
 import './App.css';
 import Input from './components/Input';
-import Select from './components/Select';
-import Radio from './components/Radio';
-import Checkbox from './components/Checkbox';
+import useForm from './components/useForm';
 
 const App = () => {
-     const [input, setInput] = React.useState('');
-     const [email, setEmail] = React.useState('');
-     const [option, setOption] = React.useState();
-     const [radio, setRadio] = React.useState();
-     const [size, setSize] = React.useState([]);
+     const cep = useForm('cep');
+     const email = useForm('email');
+     const nome = useForm();
+     const sobrenome = useForm(false);
+
+     const handleSubmit = (event) => {
+          event.preventDefault();
+          if (cep.validate() && email.validate() && nome.validate()) {
+               console.log('Enviar');
+          } else {
+               console.log('Não enviar');
+          }
+     };
      return (
-          <form>
-               <div className="flex">
-                    <Select options={['notebook', 'smartphone', 'tablet']} setOption={setOption} value={option} />
-                    <div className="grid">
-                         <Radio options={['Azul', 'Vermelho', 'Verde']} value={radio} setRadio={setRadio} />
-                    </div>
+          <form onSubmit={handleSubmit}>
+               <div className='flex'>
+                    <Input name="Nome" id="nome" type="text" {...nome} />
+                    <Input name="Sobrenome" id="sobrenome" type="text" {...sobrenome} />
                </div>
-               <div>
-                    <Checkbox options={['P', 'M', 'G']} value={size} setSize={setSize} />
-               </div>
-               <Input name="Nome" id="name" type="text" setInput={setInput} value={input} />
-               <Input name="Email" id="email" type="email" setInput={setEmail} value={email} required />
-               <div>
-                    <button className="bg-blue-600 px-4 py-2 ml-4 mt-4">Enviar</button>
-               </div>
+               <Input name="CEP" id="cep" type="text" placeholder="00000-000" {...cep} />
+               <Input name="Email" id="email" type="email" {...email} />
+               <button className="py-2 px-4 bg-blue-200 rounded mt-2 ml-3">Enviar</button>
           </form>
      );
 };
