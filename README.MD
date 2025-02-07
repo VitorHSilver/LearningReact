@@ -1,96 +1,104 @@
+# Aprendendo React - Exercício de Quiz
 
-### Definição de Tipos
+Este projeto é uma aplicação de quiz simples construída com React. Ele demonstra o uso de gerenciamento de estado, manipulação de eventos e renderização condicional no React.
 
-```javascript
-const types = {
-     cep: {
-          regex: /^\d{5}-?\d{3}$/,
-          message: 'cep incorreto',
+## Estrutura do Projeto
+
+O componente principal da aplicação é o `App`, que gerencia o estado e a lógica do quiz. As perguntas são definidas em um array de objetos, cada um contendo o texto da pergunta, opções, resposta correta e um ID.
+
+### Componentes
+
+-    **App**: O componente principal que renderiza o quiz e lida com as mudanças de estado.
+-    **Radio**: Um componente personalizado usado para renderizar os botões de rádio para cada pergunta.
+
+### Gerenciamento de Estado
+
+O componente `App` usa as seguintes variáveis de estado:
+
+-    `respostas`: Um objeto que armazena as respostas do usuário.
+-    `slide`: Um número que rastreia o índice da pergunta atual.
+-    `resultado`: Uma string que armazena o resultado final após a conclusão do quiz.
+
+### Funções
+
+-    `handleChange`: Atualiza a resposta do usuário para uma pergunta.
+-    `resultadoFinal`: Calcula o número de respostas corretas e define o resultado.
+-    `handleClick`: Avança para a próxima pergunta ou mostra o resultado se o quiz estiver concluído.
+
+```jsx
+import React from 'react';
+import Radio from './Form/Radio';
+
+const perguntas = [
+     {
+          pergunta: 'Qual método é utilizado para criar componentes?',
+          options: ['React.makeComponent()', 'React.createComponent()', 'React.createElement()'],
+          resposta: 'React.createElement()',
+          id: 'p1',
      },
-     email: {
-          regex: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-          message: 'email, não valido... tente novamente',
+     {
+          pergunta: 'Como importamos um componente externo?',
+          options: ['import Component from "./Component"', 'require("./Component")', 'import "./Component"'],
+          resposta: 'import Component from "./Component"',
+          id: 'p2',
      },
-};
-```
+     {
+          pergunta: 'Qual hook não é nativo?',
+          options: ['useEffect()', 'useFetch()', 'useCallback()'],
+          resposta: 'useFetch()',
+          id: 'p3',
+     },
+     {
+          pergunta: 'Qual palavra deve ser utilizada para criarmos um hook?',
+          options: ['set', 'get', 'use'],
+          resposta: 'use',
+          id: 'p4',
+     },
+];
 
-Aqui, definimos um objeto types que contém as regras de validação (regex) e mensagens de erro para diferentes tipos de inputs, como cep e email.
+const App = () => {
+     const [respostas, setRespostas] = React.useState({
+          p1: '',
+          p2: '',
+          p3: '',
+          p4: '',
+     });
+     const [slide, setSlide] = React.useState(0);
+     const [resultado, setResultado] = React.useState(null);
 
-Hook useForm
+     function handleChange({ target }) {
+          setRespostas({ ...respostas, [target.id]: target.value });
+     }
 
-```javascript
-const useForm = (type) => {
-     const [value, setValue] = React.useState('');
-     const [error, setError] = React.useState(null);
+     function resultadoFinal() {
+          const corretas = perguntas.filter(({ id, resposta }) => respostas[id] === resposta);
+          setResultado(`Você acertou: ${corretas.length} de ${perguntas.length}`);
+     }
 
-     function validate(value) {
-          if (type === false) return true;
-          if (value.length === 0) {
-               setError('insira um valor');
-               return false;
-          } else if (types[type] && !types[type].regex.test(value)) {
-               setError(types[type].message);
-               return false;
+     function handleClick() {
+          if (slide < perguntas.length - 1) {
+               setSlide(slide + 1);
           } else {
-               setError(null);
-               return true;
+               setSlide(slide + 1);
+               resultadoFinal();
           }
      }
 
-     function onChange({ target }) {
-          if (error) validate(target.value);
-          setValue(target.value);
-     }
-
-     return {
-          value,
-          setValue,
-          onChange,
-          error,
-          onBlur: () => validate(value),
-          validate: () => validate(value),
-     };
-};
-export default useForm;
-```
-
-O hook useForm aceita um parâmetro type que define o tipo de validação a ser aplicada. Ele gerencia três estados principais:
-
-value: o valor do input.
-error: a mensagem de erro, se houver.
-setValue e setError: funções para atualizar os estados.
-Função validate
-A função validate verifica se o valor do input é válido com base no tipo fornecido. Se o valor for inválido, ela define uma mensagem de erro apropriada.
-
-Função onChange
-A função onChange é chamada sempre que o valor do input muda. Ela atualiza o estado value e, se houver um erro, chama a função validate para verificar o novo valor.
-
-Utilização do Hook
-
-```jsx
-const cep = useForm('cep');
-const email = useForm('email');
-const nome = useForm();
-const sobrenome = useForm(false);
-
-const handleSubmit = (event) => {
-     event.preventDefault();
-     if (cep.validate() && email.validate() && nome.validate()) {
-          console.log('Enviar');
-     } else {
-          console.log('Não enviar');
-     }
+     return (
+          <form onSubmit={(event) => event.preventDefault()}>
+               {perguntas.map((pergunta, index) => (
+                    <Radio
+                         active={slide === index}
+                         key={pergunta.id}
+                         value={respostas[pergunta.id]}
+                         onChange={handleChange}
+                         {...pergunta}
+                    />
+               ))}
+               {resultado ? <p>{resultado}</p> : <button onClick={handleClick}>Próxima</button>}
+          </form>
+     );
 };
 
-return (
-     <form onSubmit={handleSubmit}>
-          <div className="flex">
-               <Input name="Nome" id="nome" type="text" {...nome} />
-               <Input name="Sobrenome" id="sobrenome" type="text" {...sobrenome} />
-          </div>
-          <Input name="CEP" id="cep" type="text" placeholder="00000-000" {...cep} />
-          <Input name="Email" id="email" type="email" {...email} />
-          <button className="py-2 px-4 bg-blue-200 rounded mt-2 ml-3">Enviar</button>
-     </form>
-);
+export default App;
 ```

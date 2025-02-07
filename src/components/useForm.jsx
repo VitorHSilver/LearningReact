@@ -1,43 +1,27 @@
 import React from 'react';
-const types = {
-     cep: {
-          regex: /^\d{5}-?\d{3}$/,
-          message: 'cep incorreto',
-     },
-     email: {
-          regex: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-          message: 'email, não valido... tente novamente',
-     },
-};
-const useForm = (type) => {
+const useForm = () => {
      const [value, setValue] = React.useState('');
      const [error, setError] = React.useState(null);
+     const [score, setScore] = React.useState(0);
 
-     function validate(value) {
-          if (type === false) return true;
-          if (value.length === 0) {
-               setError('insira um valor');
+     const checkValue = (selectedValue, correctAnswer) => {
+          if (!selectedValue) {
+               setError('Insira um valor');
                return false;
-          } else if (types[type] && !types[type].regex.test(value)) {
-               setError(types[type].message);
-               return false;
-          } else {
+          } else if (selectedValue === correctAnswer) {
                setError(null);
+               setScore(score + 1);
+               return true;
+          } else {
                return true;
           }
-     }
-
-     function onChange({ target }) {
-          if (error) validate(target.value);
-          setValue(target.value);
-     }
+     };
      return {
           value,
-          setValue,
-          onChange,
           error,
-          onBlur: () => validate(value),
-          validate: () => validate(value),
+          setValue,
+          checkValue,
+          score,
      };
 };
 export default useForm;
