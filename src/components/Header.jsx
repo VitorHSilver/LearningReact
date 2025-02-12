@@ -5,7 +5,7 @@ const Header = () => {
      return (
           <nav className="mt-24 flex gap-4">
                <NavLink to="/" end>
-                    <Button name="Produto" />
+                    <Button name="Produtos" />
                </NavLink>
                <NavLink to="contato">
                     <Button name="Contato" />{' '}

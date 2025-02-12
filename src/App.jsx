@@ -5,6 +5,7 @@ import Home from './components/Home';
 import NotFound from './components/NotFound';
 import Header from './components/Header';
 import Contato from './components/Contato';
+import Product from './components/Product';
 
 // Utilize a API abaixo para puxar a lista de produto
 // https://ranekapi.origamid.dev/json/api/produto
@@ -14,11 +15,12 @@ import Contato from './components/Contato';
 const App = () => {
      return (
           <BrowserRouter>
-               <div className="w-[1000px] m-auto">
+               <div className="w-[500px] m-auto">
                     <Header />
                     <Routes>
                          <Route path="/" element={<Home />} />
                          <Route path="/contato" element={<Contato />} />
+                         <Route path="/produto/:id" element={<Product />} />
                          <Route path="*" element={<NotFound />} />
                     </Routes>
                </div>
