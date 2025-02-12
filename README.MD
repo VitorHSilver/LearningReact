@@ -1,104 +1,34 @@
-# Aprendendo React - Exercício de Quiz
+# Desafio React - Produto
 
-Este projeto é uma aplicação de quiz simples construída com React. Ele demonstra o uso de gerenciamento de estado, manipulação de eventos e renderização condicional no React.
+Este projeto é um desafio de React que consiste em criar uma página de produto utilizando a biblioteca React e React Router.
 
-## Estrutura do Projeto
+## Funcionalidades
 
-O componente principal da aplicação é o `App`, que gerencia o estado e a lógica do quiz. As perguntas são definidas em um array de objetos, cada um contendo o texto da pergunta, opções, resposta correta e um ID.
+- Busca de dados de um produto específico a partir de uma API externa.
+- Exibição de informações detalhadas do produto, incluindo imagem, nome, preço e descrição.
+- Atualização dinâmica do título da página com o nome do produto.
+- Tratamento de estados de carregamento e erros durante a busca dos dados.
 
-### Componentes
+## Estrutura do Código
 
--    **App**: O componente principal que renderiza o quiz e lida com as mudanças de estado.
--    **Radio**: Um componente personalizado usado para renderizar os botões de rádio para cada pergunta.
+O componente `Product` é responsável por:
 
-### Gerenciamento de Estado
+1. **Estado e Hooks**:
+     - `product`: Armazena os dados do produto.
+     - `loading`: Indica se os dados estão sendo carregados.
+     - `useParams`: Hook do React Router para obter o ID do produto a partir da URL.
 
-O componente `App` usa as seguintes variáveis de estado:
+2. **Função `fetchProduct`**:
+     - Faz uma requisição à API para obter os dados do produto.
+     - Atualiza o estado `product` com os dados recebidos.
+     - Atualiza o estado `loading` para indicar o fim do carregamento.
+     - Atualiza o título da página com o nome do produto.
 
--    `respostas`: Um objeto que armazena as respostas do usuário.
--    `slide`: Um número que rastreia o índice da pergunta atual.
--    `resultado`: Uma string que armazena o resultado final após a conclusão do quiz.
+3. **Efeito `useEffect`**:
+     - Chama a função `fetchProduct` sempre que o ID do produto na URL mudar.
 
-### Funções
+4. **Renderização Condicional**:
+     - Exibe uma mensagem de carregamento enquanto os dados estão sendo buscados.
+     - Exibe os detalhes do produto quando os dados são carregados.
 
--    `handleChange`: Atualiza a resposta do usuário para uma pergunta.
--    `resultadoFinal`: Calcula o número de respostas corretas e define o resultado.
--    `handleClick`: Avança para a próxima pergunta ou mostra o resultado se o quiz estiver concluído.
 
-```jsx
-import React from 'react';
-import Radio from './Form/Radio';
-
-const perguntas = [
-     {
-          pergunta: 'Qual método é utilizado para criar componentes?',
-          options: ['React.makeComponent()', 'React.createComponent()', 'React.createElement()'],
-          resposta: 'React.createElement()',
-          id: 'p1',
-     },
-     {
-          pergunta: 'Como importamos um componente externo?',
-          options: ['import Component from "./Component"', 'require("./Component")', 'import "./Component"'],
-          resposta: 'import Component from "./Component"',
-          id: 'p2',
-     },
-     {
-          pergunta: 'Qual hook não é nativo?',
-          options: ['useEffect()', 'useFetch()', 'useCallback()'],
-          resposta: 'useFetch()',
-          id: 'p3',
-     },
-     {
-          pergunta: 'Qual palavra deve ser utilizada para criarmos um hook?',
-          options: ['set', 'get', 'use'],
-          resposta: 'use',
-          id: 'p4',
-     },
-];
-
-const App = () => {
-     const [respostas, setRespostas] = React.useState({
-          p1: '',
-          p2: '',
-          p3: '',
-          p4: '',
-     });
-     const [slide, setSlide] = React.useState(0);
-     const [resultado, setResultado] = React.useState(null);
-
-     function handleChange({ target }) {
-          setRespostas({ ...respostas, [target.id]: target.value });
-     }
-
-     function resultadoFinal() {
-          const corretas = perguntas.filter(({ id, resposta }) => respostas[id] === resposta);
-          setResultado(`Você acertou: ${corretas.length} de ${perguntas.length}`);
-     }
-
-     function handleClick() {
-          if (slide < perguntas.length - 1) {
-               setSlide(slide + 1);
-          } else {
-               setSlide(slide + 1);
-               resultadoFinal();
-          }
-     }
-
-     return (
-          <form onSubmit={(event) => event.preventDefault()}>
-               {perguntas.map((pergunta, index) => (
-                    <Radio
-                         active={slide === index}
-                         key={pergunta.id}
-                         value={respostas[pergunta.id]}
-                         onChange={handleChange}
-                         {...pergunta}
-                    />
-               ))}
-               {resultado ? <p>{resultado}</p> : <button onClick={handleClick}>Próxima</button>}
-          </form>
-     );
-};
-
-export default App;
-```
