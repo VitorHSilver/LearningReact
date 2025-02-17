@@ -1,139 +1,61 @@
-## Visão Geral
+# Utilizando Lazy e Suspense no React
 
-Este projeto demonstra uma aplicação simples em React que inclui um formulário para registro de usuários. O formulário coleta vários detalhes do usuário e os envia para um endpoint da API usando o método `fetch`.
+## Por que usar Lazy e Suspense?
 
-## Funcionalidades
+O React Lazy e Suspense são ferramentas poderosas para otimização de desempenho em aplicações React. Eles permitem que você carregue componentes de forma assíncrona, o que pode melhorar significativamente o tempo de carregamento inicial da sua aplicação. Isso é especialmente útil em aplicações grandes, onde o carregamento de todos os componentes de uma vez pode ser demorado.
 
--    **Manipulação de Formulário**: O formulário inclui campos para nome, email, senha e detalhes de endereço.
--    **Gerenciamento de Estado**: Utiliza o hook `useState` do React para gerenciar os dados do formulário e o estado da resposta.
--    **Interação com API**: Envia os dados do formulário para um endpoint da API usando o método `fetch`.
+## Como usar Lazy e Suspense?
 
-## Explicação do Código
+### Passo 1: Importar Lazy e Suspense
 
-### Estado do Formulário
-
-O estado do formulário é gerenciado usando o hook `useState`. O estado inicial inclui campos para nome, email, senha e detalhes de endereço.
+Primeiro, você precisa importar `lazy` e `Suspense` do React.
 
 ```javascript
-const [form, setForm] = React.useState({
-     nome: '',
-     email: '',
-     senha: '',
-     cep: '',
-     rua: '',
-     numero: '',
-     bairro: '',
-     cidade: '',
-     estado: '',
-});
+import React, { lazy, Suspense } from 'react';
 ```
 
-### Campos de Entrada
+### Passo 2: Utilizar Lazy para carregar componentes
 
-Os campos de entrada são gerados dinamicamente a partir de um array de configurações de entrada. Cada campo de entrada atualiza o estado do formulário usando a função `handleChange`.
+Em seguida, utilize `lazy` para carregar o componente de forma assíncrona. Por exemplo:
 
 ```javascript
-const inputs = [
-     { id: 'nome', label: 'Nome', type: 'text' },
-     { id: 'email', label: 'Email', type: 'email' },
-     { id: 'senha', label: 'Senha', type: 'password' },
-     { id: 'cep', label: 'CEP', type: 'text' },
-     { id: 'rua', label: 'Rua', type: 'text' },
-     { id: 'numero', label: 'Número', type: 'text' },
-     { id: 'bairro', label: 'Bairro', type: 'text' },
-     { id: 'cidade', label: 'Cidade', type: 'text' },
-     { id: 'estado', label: 'Estado', type: 'text' },
-];
+const MeuComponente = lazy(() => import('./MeuComponente'));
 ```
 
-### Manipulação de Mudanças nos Campos
+### Passo 3: Envolver o componente com Suspense
 
-A função `handleChange` atualiza o estado do formulário quando o valor de um campo de entrada é alterado.
+Por fim, envolva o componente carregado de forma assíncrona com `Suspense` e forneça um fallback para exibir enquanto o componente está sendo carregado.
 
 ```javascript
-const handleChange = ({ target }) => {
-     const { id, value } = target;
-     setForm({ ...form, [id]: value });
-};
+function App() {
+     return (
+          <Suspense fallback={<div>Carregando...</div>}>
+               <MeuComponente />
+          </Suspense>
+     );
+}
 ```
 
-### Submissão do Formulário
+### Exemplo Completo
 
-A função `handleSubmit` lida com a submissão do formulário. Ela previne o comportamento padrão de submissão do formulário e envia os dados do formulário para o endpoint da API usando o método `fetch`.
-
-```javascript
-const handleSubmit = async (event) => {
-     event.preventDefault();
-
-     try {
-          const response = await fetch('https://ranekapi.origamid.dev/json/api/usuario', {
-               method: 'POST',
-               headers: {
-                    'Content-Type': 'application/json',
-               },
-               body: JSON.stringify(form),
-          });
-
-          // Atualiza o estado com a resposta da API
-          setResponse(response);
-
-          // Verifica se a requisição foi bem-sucedida
-          if (response.ok) {
-               console.log('Formulário enviado com sucesso!');
-               console.log(response);
-          } else {
-               console.error('Erro ao enviar o formulário:', response.statusText);
-          }
-     } catch (error) {
-          console.error('Erro na requisição:', error);
-     }
-};
-```
-
-### Renderização do Formulário
-
-O formulário é renderizado com um botão de submissão. Se a resposta for bem-sucedida, uma mensagem de confirmação é exibida.
+Aqui está um exemplo completo de como utilizar `lazy` e `Suspense`:
 
 ```javascript
-return (
-     <div className="grid grid-cols-2 min-h-screen">
-          <div className="grid bg-black h-screen place-items-center">
-               <h2 className="text-8xl text-gray-100">Cadastro</h2>
-          </div>
-          <form
-               onSubmit={handleSubmit}
-               className="grid grid-cols-2 gap-4 p-8 w-full border border-gray-400/10 shadow max-w-2xl m-auto"
-          >
-               {inputs.map(({ id, label, type }) => (
-                    <div key={id}>
-                         <div className="grid grid-cols-[80px_auto] items-center">
-                              <label className="text-gray-300 uppercase" htmlFor={id}>
-                                   {label}
-                              </label>
-                              <input
-                                   type={type}
-                                   id={id}
-                                   name={label}
-                                   value={form[id]}
-                                   onChange={handleChange}
-                                   className="border mx-2 py-1 pl-1 border-gray-400/50 rounded-md"
-                              />
-                         </div>
-                    </div>
-               ))}
-               {response && response.ok && <p>Formulário enviado</p>}
-               <div className="flex justify-end col-span-2">
-                    <button className="mx-2 py-2 px-4 bg-gray-900 text-gray-200 rounded-md place-content-end cursor-pointer">
-                         Submit
-                    </button>
-               </div>
-          </form>
-     </div>
-);
+import React, { lazy, Suspense } from 'react';
+
+const MeuComponente = lazy(() => import('./MeuComponente'));
+
+function App() {
+     return (
+          <Suspense fallback={<div>Carregando...</div>}>
+               <MeuComponente />
+          </Suspense>
+     );
+}
+
+export default App;
 ```
 
 ## Conclusão
 
-Este projeto fornece um exemplo básico de manipulação de formulários no React, gerenciamento de estado e interação com uma API usando o método `fetch`. Ele serve como um bom ponto de partida para aprender a construir e gerenciar formulários em uma aplicação React.
-
-![print](./public/print.png)
+Utilizar `lazy` e `Suspense` no React é uma maneira eficiente de melhorar o desempenho da sua aplicação, carregando componentes de forma assíncrona e exibindo um fallback enquanto o carregamento está em progresso. Isso pode resultar em uma experiência de usuário mais rápida e suave.
