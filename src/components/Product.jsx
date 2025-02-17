@@ -23,7 +23,7 @@ const Product = () => {
           fetchProduct();
      }, [id]);
 
-     if (loading) return <div>Carregando...</div>;
+     if (loading) return <div className="loading"></div>;
 
      return (
           <div className="grid grid-cols-2 gap-4">
