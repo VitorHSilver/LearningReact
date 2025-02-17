@@ -1,18 +1,37 @@
 import React from 'react';
 import './App.css';
-// import Contato from './components/Contato';
-const Contato = React.lazy(() => import('./components/Contato'));
+import Exemplo from './components/Contato';
+
+const reducer = (state, action) => {
+     switch (action) {
+          case 'aumentar':
+               return state + 1;
+          case 'diminuir':
+               return state - 1;
+          default:
+               throw new Error('');
+     }
+};
 
 const App = () => {
-     const [ativo, setAtivo] = React.useState(false);
+     const [state, dispatch] = React.useReducer(reducer, 0);
+
      return (
           <div>
-               {ativo && (
-                    <React.Suspense fallback={<div>Carregnado</div>}>
-                         <Contato />
-                    </React.Suspense>
-               )}
-               <button onClick={() => setAtivo(true)}>Ativar</button>
+               <button
+                    className="py-1 mx-4 bg-emerald-400 rounded-md p-2 mt-4 cursor-pointer"
+                    onClick={() => dispatch('aumentar')}
+               >
+                    +
+               </button>
+               <button
+                    className="py-1 mx-4 bg-emerald-400 rounded-md p-2 mt-4 cursor-pointer"
+                    onClick={() => dispatch('diminuir')}
+               >
+                    -
+               </button>
+               <p className="p-4">{state}</p>
+               <Exemplo />
           </div>
      );
 };

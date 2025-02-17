@@ -1,61 +1,128 @@
-# Utilizando Lazy e Suspense no React
+# Uso do useReducer no React
 
-## Por que usar Lazy e Suspense?
+## Introdução
 
-O React Lazy e Suspense são ferramentas poderosas para otimização de desempenho em aplicações React. Eles permitem que você carregue componentes de forma assíncrona, o que pode melhorar significativamente o tempo de carregamento inicial da sua aplicação. Isso é especialmente útil em aplicações grandes, onde o carregamento de todos os componentes de uma vez pode ser demorado.
+O `useReducer` é um hook do React que é utilizado para gerenciar o estado de componentes de forma mais complexa. Ele é uma alternativa ao `useState` e é especialmente útil quando se tem lógica de estado complexa que envolve múltiplos sub-valores ou quando o próximo estado depende do estado anterior.
 
-## Como usar Lazy e Suspense?
+## Como Usar
 
-### Passo 1: Importar Lazy e Suspense
+### Passo 1: Importar o useReducer
 
-Primeiro, você precisa importar `lazy` e `Suspense` do React.
+Primeiro, você precisa importar o `useReducer` do React:
 
 ```javascript
-import React, { lazy, Suspense } from 'react';
+import React, { useReducer } from 'react';
 ```
 
-### Passo 2: Utilizar Lazy para carregar componentes
+### Passo 2: Definir o Redutor (Reducer)
 
-Em seguida, utilize `lazy` para carregar o componente de forma assíncrona. Por exemplo:
-
-```javascript
-const MeuComponente = lazy(() => import('./MeuComponente'));
-```
-
-### Passo 3: Envolver o componente com Suspense
-
-Por fim, envolva o componente carregado de forma assíncrona com `Suspense` e forneça um fallback para exibir enquanto o componente está sendo carregado.
+Um redutor é uma função que determina como o estado e as ações são transformados em um novo estado. Ele recebe dois argumentos: o estado atual e a ação.
 
 ```javascript
-function App() {
-     return (
-          <Suspense fallback={<div>Carregando...</div>}>
-               <MeuComponente />
-          </Suspense>
-     );
+const initialState = { count: 0 };
+
+function reducer(state, action) {
+     switch (action.type) {
+          case 'increment':
+               return { count: state.count + 1 };
+          case 'decrement':
+               return { count: state.count - 1 };
+          default:
+               throw new Error();
+     }
 }
+```
+
+### Passo 3: Inicializar o useReducer
+
+Você inicializa o `useReducer` passando o redutor e o estado inicial.
+
+```javascript
+const [state, dispatch] = useReducer(reducer, initialState);
+```
+
+### Passo 4: Despachar Ações
+
+Para atualizar o estado, você despacha ações usando a função `dispatch`.
+
+```javascript
+<button onClick={() => dispatch({ type: 'increment' })}>Incrementar</button>
+<button onClick={() => dispatch({ type: 'decrement' })}>Decrementar</button>
 ```
 
 ### Exemplo Completo
 
-Aqui está um exemplo completo de como utilizar `lazy` e `Suspense`:
-
 ```javascript
-import React, { lazy, Suspense } from 'react';
+import React, { useReducer } from 'react';
 
-const MeuComponente = lazy(() => import('./MeuComponente'));
+const initialState = { count: 0 };
 
-function App() {
+function reducer(state, action) {
+     switch (action.type) {
+          case 'increment':
+               return { count: state.count + 1 };
+          case 'decrement':
+               return { count: state.count - 1 };
+          default:
+               throw new Error();
+     }
+}
+
+function Counter() {
+     const [state, dispatch] = useReducer(reducer, initialState);
+
      return (
-          <Suspense fallback={<div>Carregando...</div>}>
-               <MeuComponente />
-          </Suspense>
+          <div>
+               <p>Contagem: {state.count}</p>
+               <button onClick={() => dispatch({ type: 'increment' })}>Incrementar</button>
+               <button onClick={() => dispatch({ type: 'decrement' })}>Decrementar</button>
+          </div>
      );
 }
 
-export default App;
+export default Counter;
 ```
 
-## Conclusão
+## Utilidade
 
-Utilizar `lazy` e `Suspense` no React é uma maneira eficiente de melhorar o desempenho da sua aplicação, carregando componentes de forma assíncrona e exibindo um fallback enquanto o carregamento está em progresso. Isso pode resultar em uma experiência de usuário mais rápida e suave.
+O `useReducer` é útil quando:
+
+-    O estado do componente é complexo e envolve múltiplos sub-valores.
+-    O próximo estado depende do estado anterior.
+-    Você deseja centralizar a lógica de atualização de estado em uma única função.
+
+Ele ajuda a tornar o código mais previsível e fácil de entender, especialmente em aplicações maiores.
+
+```jsx
+const reducer = (state, action) => {
+     switch (action.type) {
+          case 'remover':
+               return state.filter((item) => item !== action.content);
+          case 'adicionar':
+               return [...state, action.content];
+          default:
+               throw new Error('Erro');
+     }
+};
+const Exemplo = () => {
+     const [state, dispatch] = React.useReducer(reducer, ['Banana', 'Uva']);
+     return (
+          <>
+               <button
+                    className="py-1 mx-4 bg-emerald-400 rounded-md p-2 mt-4 cursor-pointer"
+                    onClick={() => dispatch({ type: 'remover', content: 'Banana' })}
+               >
+                    Remover Banana
+               </button>
+               <button
+                    className="py-1 mx-4 bg-emerald-400 rounded-md p-2 mt-4 cursor-pointer"
+                    onClick={() => dispatch({ type: 'adicionar', content: 'Limão' })}
+               >
+                    Adicionar Limão
+               </button>
+               {state}
+          </>
+     );
+};
+export default Exemplo;
+```
